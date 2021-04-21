@@ -1,5 +1,23 @@
 /**
- * This work is forked from https://gist.github.com/pachacamac/d7b3d667ecaa0cd39f36 and modified by julkwel <https://github.com/julkwel>
+ * Part of this work is forked from https://gist.github.com/pachacamac/d7b3d667ecaa0cd39f36 and modified by julkwel <https://github.com/julkwel>
+ */
+
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+var colors = ["aqua", "azure", "beige", "bisque", "black", "blue", "brown", "chocolate", "coral", "crimson", "cyan", "fuchsia", "ghostwhite", "gold", "goldenrod", "gray", "green", "indigo", "ivory", "khaki", "lavender", "lime", "linen", "magenta", "maroon", "moccasin", "navy", "olive", "orange", "orchid", "peru", "pink", "plum", "purple", "red", "salmon", "sienna", "silver", "snow", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "white", "yellow"];
+var grammar = '#JSGF V1.0; grammar colors; public <color> = ' + colors.join(' | ') + ' ;';
+var recognition = new SpeechRecognition();
+var speechRecognitionList = new SpeechGrammarList();
+
+speechRecognitionList.addFromString(grammar, 1);
+recognition.grammars = speechRecognitionList;
+recognition.continuous = false;
+recognition.lang = 'en-US';
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
+
+/**
+ * Recording a voice
  *
  * @param cb
  * @constructor
@@ -14,7 +32,8 @@ const Recording = function (cb) {
 
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
     if (navigator.getUserMedia) {
-        navigator.getUserMedia({audio: true},
+        navigator.getUserMedia(
+            {audio: true},
             function (e) { //success
                 let AudioContext = window.AudioContext || window.webkitAudioContext;
                 audioContext = new AudioContext();
@@ -63,15 +82,56 @@ function detectClap(data) {
 }
 
 const changeBg = function (container) {
-    if ($(container).hasClass('bg-light')) {
-        $(container).removeClass('bg-light').addClass('bg-dark');
-    } else {
-        $(container).removeClass('bg-dark').addClass('bg-light');
-    }
+    $(container).css('background', colors[Math.floor(Math.random() * colors.length)])
 };
 
 new Recording(function (data) {
-    if (detectClap(data)) {
+    if (detectClap(data) && !$('.choose-color').hasClass('speech')) {
         changeBg('.clap-change-bg');
     }
+});
+
+recognition.onresult = function (event) {
+    let color = event.results[0][0].transcript;
+    color = color.toLowerCase();
+
+    if (colors.includes(color)) {
+        alert('Color : ' + color + ' choosen !!!!');
+        $('.clap-change-bg').css('background', color);
+    }
+};
+
+recognition.onnomatch = function () {
+    reboot();
+};
+
+recognition.onerror = function () {
+    reboot();
+};
+
+recognition.onspeechend = function () {
+    recognition.stop();
+    reboot();
+};
+
+const reboot = function () {
+    setTimeout(function () {
+        recognition.start();
+    }, 1000);
+};
+
+$(function () {
+    $(document).on('click', '.choose-color', function () {
+        if ($(this).hasClass('speech')) {
+            $(this).removeClass('speech');
+            $(this).text('Color speech !');
+
+            $('.color-list').text('');
+        } else {
+            $(this).addClass('speech');
+            $(this).text('End color speech !');
+            $('.color-list').text(colors.join(','));
+            recognition.start();
+        }
+    })
 });
