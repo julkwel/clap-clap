@@ -97,17 +97,22 @@ recognition.onresult = function (event) {
     if (colors.includes(color)) {
         Swal.fire('Yesss !', color + ' choosen !', 'success').then(() => {
             $('.clap-change-bg').css('background', color);
-
-            reboot();
+            switchToSong();
         });
     }
 };
 
-recognition.onnomatch = function () {
+recognition.onnomatch = function (event) {
+    console.log('nomatch' + event.error);
     reboot();
 };
 
-recognition.onerror = function () {
+recognition.onerror = function (event) {
+    console.log('error' + event.error);
+    reboot();
+};
+
+recognition.onspeechend = function (event) {
     reboot();
 };
 
@@ -119,23 +124,34 @@ const reboot = function () {
     }, 1000);
 };
 
+const colorButton = $('.choose-color');
+let speechList = $('.alert-speech');
+let colorList = $('.color-list');
+
+const switchToSong = function () {
+    colorButton.removeClass('speech');
+    colorButton.text('Color speech !');
+    colorList.text('');
+    speechList.addClass('d-none');
+
+    recognition.stop();
+};
+
+const switchToSpeel = function () {
+    colorButton.addClass('speech');
+    colorButton.text('Switch to song !');
+    speechList.removeClass('d-none');
+    colorList.text(colors.join(','));
+
+    recognition.start();
+};
+
 $(function () {
     $(document).on('click', '.choose-color', function () {
         if ($(this).hasClass('speech')) {
-            $(this).removeClass('speech');
-            $(this).text('Color speech !');
-
-            $('.color-list').text('');
-            $('.alert-speech').addClass('d-none');
-
-            recognition.stop();
+            switchToSong();
         } else {
-            $(this).addClass('speech');
-            $(this).text('Switch to song !');
-            $('.alert-speech').removeClass('d-none');
-            $('.color-list').text(colors.join(','));
-
-            recognition.start();
+            switchToSpeel();
         }
     })
 });
