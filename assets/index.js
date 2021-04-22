@@ -136,7 +136,7 @@ $(function () {
             $('.alert-speech').removeClass('d-none');
             $('.color-list').text(colors.join(','));
 
-            recognition.start();
+            reboot();
         }
     })
 });
