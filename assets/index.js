@@ -116,7 +116,7 @@ recognition.onspeechend = function () {
 
 const reboot = function () {
     recognition.stop();
-    
+
     setTimeout(function () {
         recognition.start();
     }, 1000);
