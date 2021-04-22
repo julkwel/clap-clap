@@ -1,5 +1,7 @@
 # Clap-Clap
 
-If your happy, even sad, clap your hand.
+If your happy, even sad, clap your hand or speech a color !.
 
-*Fun !!*
+*JavaScript voice/color recognition*
+
+*Fun and be happy !!!*
