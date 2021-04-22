@@ -97,6 +97,8 @@ recognition.onresult = function (event) {
     if (colors.includes(color)) {
         Swal.fire('Yesss !', color + ' choosen !', 'success').then(() => {
             $('.clap-change-bg').css('background', color);
+
+            reboot();
         });
     }
 };
@@ -106,11 +108,6 @@ recognition.onnomatch = function () {
 };
 
 recognition.onerror = function () {
-    reboot();
-};
-
-recognition.onspeechend = function () {
-    recognition.stop();
     reboot();
 };
 
@@ -130,13 +127,15 @@ $(function () {
 
             $('.color-list').text('');
             $('.alert-speech').addClass('d-none');
+
+            recognition.stop();
         } else {
             $(this).addClass('speech');
             $(this).text('Switch to song !');
             $('.alert-speech').removeClass('d-none');
             $('.color-list').text(colors.join(','));
 
-            reboot();
+            recognition.start();
         }
     })
 });
