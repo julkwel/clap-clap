@@ -1,7 +1,6 @@
 /**
  * Part of this work is forked from https://gist.github.com/pachacamac/d7b3d667ecaa0cd39f36 and modified by julkwel <https://github.com/julkwel>
  */
-
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
 var colors = ["aqua", "azure", "beige", "bisque", "black", "blue", "brown", "chocolate", "coral", "crimson", "cyan", "fuchsia", "ghostwhite", "gold", "goldenrod", "gray", "green", "indigo", "ivory", "khaki", "lavender", "lime", "linen", "magenta", "maroon", "moccasin", "navy", "olive", "orange", "orchid", "peru", "pink", "plum", "purple", "red", "salmon", "sienna", "silver", "snow", "tan", "teal", "thistle", "tomato", "turquoise", "violet", "white", "yellow"];
@@ -55,7 +54,7 @@ const Recording = function (cb) {
             },
 
             function (e) { //failure
-                alert('Error capturing audio.');
+                Swal.fire('Oopppss ...', 'Error capturing audio.', 'error');
             }
         );
     } else {
@@ -96,8 +95,9 @@ recognition.onresult = function (event) {
     color = color.toLowerCase();
 
     if (colors.includes(color)) {
-        alert('Color : ' + color + ' choosen !!!!');
-        $('.clap-change-bg').css('background', color);
+        Swal.fire('Yesss !', color + ' choosen !', 'success').then(() => {
+            $('.clap-change-bg').css('background', color);
+        });
     }
 };
 
@@ -127,10 +127,13 @@ $(function () {
             $(this).text('Color speech !');
 
             $('.color-list').text('');
+            $('.alert-speech').addClass('d-none');
         } else {
             $(this).addClass('speech');
-            $(this).text('End color speech !');
+            $(this).text('Switch to song !');
+            $('.alert-speech').removeClass('d-none');
             $('.color-list').text(colors.join(','));
+
             recognition.start();
         }
     })
