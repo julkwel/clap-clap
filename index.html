@@ -8,33 +8,30 @@
 <body>
 <div class="container-fluid p-0">
     <div class="col-md-12 m-auto vh-100 clap-change-bg">
+        <div class="icon-container text-danger">
+            <a href="https://github.com/julkwel/clap-clap" target="_blank">
+                <img src="./assets/github-logo.png" class="icon-github" alt="">
+            </a>
+        </div>
         <div class="container-item h-100  d-flex align-items-center justify-content-center">
-            <div class="card">
-                <div class="card-header text-center">
-                    <div class="row">
-                        <div class="col-md-10">
-                            <h4>Change the BG color !</h4>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="icon-container w-100 d-block text-center text-danger">
-                                <a href="https://github.com/julkwel/clap-clap" target="_blank">
-                                    <img src="./assets/github-logo.png" class="icon-github" alt="">
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-md-12 text-center">
+                <div class="alert col-md-6 m-auto text-center mb-3 alert-info alert-speech d-none">
+                    <h2>Speel one color</h2>
+                    <span class="color-list col-md-12 text-center text-wrap word-break"></span>
                 </div>
-                <div class="card-body text-center">
-                    <p>If you're happy and you know it, clap your hands or play a song!</p>
-                    <div class="col-md-6 m-auto">
-                        <div class="alert alert-info alert-speech d-none">
-                            <h2>Speel one color</h2>
-                            <span class="color-list"></span>
-                        </div>
-                        <button class="btn btn-primary choose-color">
-                            Color speech !
-                        </button>
-                    </div>
+
+                <div class="mt-2">
+                    <button class="btn btn-danger m-2 clap-clap">
+                        Clap clap !
+                    </button>
+
+                    <button class="btn btn-info m-2 choose-color">
+                        Color speech !
+                    </button>
+
+                    <button class="btn btn-primary m-2 play-music">
+                        Play music
+                    </button>
                 </div>
             </div>
         </div>

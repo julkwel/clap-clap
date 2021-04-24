@@ -1,5 +1,5 @@
 /**
- * Part of this work is forked from https://gist.github.com/pachacamac/d7b3d667ecaa0cd39f36 and modified by julkwel <https://github.com/julkwel>
+ * By julkwel <https://github.com/julkwel>
  */
 var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
 var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
@@ -17,6 +17,8 @@ recognition.maxAlternatives = 1;
 
 /**
  * Recording a voice
+ *
+ * This function is a forked from https://gist.github.com/pachacamac/d7b3d667ecaa0cd39f36 and modified by me
  *
  * @param cb
  * @constructor
@@ -85,6 +87,7 @@ const changeBg = function (container) {
 };
 
 new Recording(function (data) {
+    console.log('aaaa');
     if (detectClap(data) && !$('.choose-color').hasClass('speech')) {
         changeBg('.clap-change-bg');
     }
@@ -97,7 +100,6 @@ recognition.onresult = function (event) {
     if (colors.includes(color)) {
         Swal.fire('Yesss !', color + ' choosen !', 'success').then(() => {
             $('.clap-change-bg').css('background', color);
-            switchToSong();
         });
     }
 };
@@ -125,33 +127,107 @@ const reboot = function () {
 };
 
 const colorButton = $('.choose-color');
-let speechList = $('.alert-speech');
-let colorList = $('.color-list');
+const speechList = $('.alert-speech');
+const colorList = $('.color-list');
 
 const switchToSong = function () {
-    colorButton.removeClass('speech');
-    colorButton.text('Color speech !');
-    colorList.text('');
-    speechList.addClass('d-none');
-
+    onNotSpeech();
     recognition.stop();
 };
 
-const switchToSpeel = function () {
+const onNotSpeech = function () {
+    speechList.addClass('d-none');
+    colorList.addClass('d-none');
+    colorButton.removeClass('speech');
+};
+
+const onSpeech = function () {
     colorButton.addClass('speech');
-    colorButton.text('Switch to song !');
     speechList.removeClass('d-none');
-    colorList.text(colors.join(','));
+    colorList.removeClass('d-none').text(colors.join(','));
+};
+
+const switchToSpeel = function () {
+    onSpeech();
 
     recognition.start();
 };
 
+const toggleFullscreen = (close) => {
+    let element = document.documentElement;
+    let isFullscreen = document.webkitIsFullScreen || document.mozFullScreen || false;
+
+    element.requestFullScreen = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || function () {
+        return false;
+    };
+
+    document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function () {
+        return false;
+    };
+
+    if (close) {
+        document.cancelFullScreen();
+
+        return;
+    }
+
+    isFullscreen ? document.cancelFullScreen() : element.requestFullScreen();
+};
+
+// add your music in music directory, then put your title here,
+const musics = [
+    '2002',
+    'door-open'
+];
+
+let audioElement = new Audio('./assets/music/' + musics[Math.floor(Math.random() * musics.length)] + '.mp3');
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioContext();
+const track = audioContext.createMediaElementSource(audioElement);
+
+// connect the track
+track.connect(audioContext.destination);
+
+const playButton = document.querySelector('button.play-music');
+playButton.addEventListener('click', function () {
+    onNotSpeech();
+    audioPlayer();
+}, false);
+
+audioPlayer = function (event) {
+    if ('pause' === event) {
+        audioElement.pause();
+        return;
+    }
+
+    // launch audio
+    audioElement.play().then();
+    // toggleFullscreen();
+
+    // check if context is in suspended state (autoplay policy)
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().then();
+        $('button.play-music').text('Pause song !');
+        toggleFullscreen();
+    }
+
+    if (audioContext.state === 'running') {
+        $('button.play-music').text('Resume song !');
+        audioContext.suspend().then();
+        toggleFullscreen();
+    }
+};
+
 $(function () {
     $(document).on('click', '.choose-color', function () {
-        if ($(this).hasClass('speech')) {
-            switchToSong();
-        } else {
-            switchToSpeel();
-        }
+        audioPlayer('pause');
+        switchToSpeel();
+        toggleFullscreen(true);
+    });
+
+    $(document).on('click', '.clap-clap', function () {
+        audioPlayer('pause');
+        switchToSong();
+        toggleFullscreen(true);
     })
 });
